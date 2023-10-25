@@ -61,7 +61,7 @@ jobs:
         buildplat:
           - [ubuntu-latest, manylinux, "x86_64 aarch64"]
           - [macos-latest, macosx, x86_64]
-          - [windows-latest, win, x86_64]
+          - [windows-latest, win, AMD64]
         python: ["cp37", "cp38", "cp39", "cp310", "cp311"]
 
     steps:
@@ -69,6 +69,10 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version: "^1.17.0"
 
       - name: Set up QEMU
         if: runner.os == 'Linux'
@@ -80,8 +84,6 @@ jobs:
         if: ${{ matrix.buildplat[1] == 'manylinux' }}
         uses: pypa/cibuildwheel@v2.11.4
         env:
-          CIBW_ENVIRONMENT: PATH=$(pwd)/go/bin:$PATH
-          CIBW_BEFORE_BUILD: sh pre-build-command.sh
           CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}*
           CIBW_SKIP: "pp* *-musllinux*"
           CIBW_ARCHS_LINUX: ${{ matrix.buildplat[2] }}
@@ -90,8 +92,6 @@ jobs:
         if: ${{ matrix.buildplat[1] == 'macosx' }}
         uses: pypa/cibuildwheel@v2.11.4
         env:
-          CIBW_ENVIRONMENT: PATH=$(pwd)/go/bin:$PATH
-          CIBW_BEFORE_BUILD: sh pre-build-command.sh
           CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}*
           CIBW_SKIP: "pp* *-musllinux*"
           CIBW_ARCHS_MACOS: ${{ matrix.buildplat[2] }}
@@ -100,8 +100,6 @@ jobs:
         if: ${{ matrix.buildplat[1] == 'win' }}
         uses: pypa/cibuildwheel@v2.11.4
         env:
-          CIBW_ENVIRONMENT: PATH=$(pwd)/go/bin:$PATH
-          CIBW_BEFORE_BUILD: Invoke-WebRequest -URI "https://storage.googleapis.com/golang/go1.17.windows-amd64.zip" | Expand-Archive
           CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}*
           CIBW_SKIP: "pp* *-musllinux*"
           CIBW_ARCHS_WINDOWS: ${{ matrix.buildplat[2] }}
