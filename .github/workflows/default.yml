@@ -96,8 +96,8 @@ jobs:
           CIBW_SKIP: "pp* *-musllinux*"
           CIBW_ARCHS_MACOS: ${{ matrix.buildplat[2] }}
 
-      - name: Build wheels on macos
-        if: ${{ matrix.buildplat[1] == 'windows' }}
+      - name: Build wheels on windows
+        if: ${{ matrix.buildplat[1] == 'win' }}
         uses: pypa/cibuildwheel@v2.11.4
         env:
           CIBW_ENVIRONMENT: PATH=$(pwd)/go/bin:$PATH
